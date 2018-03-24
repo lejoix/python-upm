@@ -9,6 +9,8 @@ import csv
 import random
 import math
 import operator
+from matplotlib import pyplot as plt
+import numpy as np
 
 # Split the data into training and test data
 def loadDataset(filename, split, trainingSet=[] , testSet=[]):
@@ -66,40 +68,43 @@ def main():
     testSet=[]
     custom_test=[]
 
-    split = 0.67
-    loadDataset('accelerometer/1.csv', split, trainingSet, testSet)
-    loadDataset('accelerometer/2.csv', split, trainingSet, testSet)
-    loadDataset('accelerometer/3.csv', split, trainingSet, testSet)
-    loadDataset('accelerometer/4.csv', split, trainingSet, testSet)
-    split = 0.9994
-    loadDataset('accelerometer/5.csv', split, trainingSet1, custom_test)
+    split = 0.9999 #we use 0.0006% of the data to test
+    loadDataset('accelerometer/1.csv', split, trainingSet, custom_test)
+    loadDataset('accelerometer/2.csv', split, trainingSet, custom_test)
+    # loadDataset('accelerometer/3.csv', split, trainingSet, testSet)
+    # loadDataset('accelerometer/4.csv', split, trainingSet, testSet)
+    # loadDataset('accelerometer/5.csv', split, trainingSet, testSet)
+    #we avoid putting this into the training set
+    loadDataset('accelerometer/3.csv', split, trainingSet1, custom_test)
     print 'Train set: ' + repr(len(trainingSet))
     print 'Test set: ' + repr(len(testSet))
     print 'Test custom: ' + repr(len(custom_test))
-    predictions=[]
-    k = 3
+    accuracy = []
+    ks = [1, 3, 5, 7, 9]
     i = 0
 
-    # for x in range(len(testSet)):
-    #     neighbors = getNeighbors(trainingSet, testSet[x], k)
-    #     result = getResponse(neighbors)
-    #     predictions.append(result)
-    #
-    #     i += 1
-    #     print(repr(i) + '> predicted=' + repr(result) + ', actual=' + repr(testSet[x][-1]))
-    # accuracy = getAccuracy(testSet, predictions)
-    # print 'Accuracy: ', accuracy
-
     print('Custom test!')
-    predictions = []
-    for x in range(len(custom_test)):
-        neighbors = getNeighbors(trainingSet, custom_test[x], k)
-        result = getResponse(neighbors)
-        predictions.append(result)
+    for k in range(len(ks)):
+        predictions = []
 
-        i+=1
-        print(repr(+i) + '> predicted=' + repr(result) + ', actual=' + repr(custom_test[x][-1]))
-    accuracy = getAccuracy(custom_test, predictions)
-    print 'Custom Accuracy: ', accuracy
+        for x in range(len(custom_test)):
+            neighbors = getNeighbors(trainingSet, custom_test[x], ks[k])
+            result = getResponse(neighbors)
+            predictions.append(result)
+
+            i+=1
+            print(repr(++i) + '> predicted=' + repr(result) + ', actual=' + repr(custom_test[x][-1]))
+
+        accuracy.append(getAccuracy(custom_test, predictions))
+        print 'Custom Accuracy: ', accuracy
+
+    x = ks
+    y = accuracy
+
+    # Plot the data
+    plt.plot(x, y)
+
+    # Show the plot
+    plt.show()
 
 main()
