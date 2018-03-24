@@ -68,7 +68,7 @@ def main():
     testSet=[]
     custom_test=[]
 
-    split = 0.9999 #we use 0.0006% of the data to test
+    split = 0.99996 #we use 0.0006% of the data to test
     loadDataset('accelerometer/1.csv', split, trainingSet, custom_test)
     loadDataset('accelerometer/2.csv', split, trainingSet, custom_test)
     # loadDataset('accelerometer/3.csv', split, trainingSet, testSet)
@@ -80,13 +80,14 @@ def main():
     print 'Test set: ' + repr(len(testSet))
     print 'Test custom: ' + repr(len(custom_test))
     accuracy = []
-    ks = [1, 3, 5, 7, 9]
+    ks = [1, 3, 9]
     i = 0
 
     print('Custom test!')
     for k in range(len(ks)):
         predictions = []
-
+        i=0
+        print ('k='+repr(ks[k]))
         for x in range(len(custom_test)):
             neighbors = getNeighbors(trainingSet, custom_test[x], ks[k])
             result = getResponse(neighbors)
@@ -96,15 +97,10 @@ def main():
             print(repr(++i) + '> predicted=' + repr(result) + ', actual=' + repr(custom_test[x][-1]))
 
         accuracy.append(getAccuracy(custom_test, predictions))
-        print 'Custom Accuracy: ', accuracy
-
-    x = ks
-    y = accuracy
+        print 'Custom Accuracy: ', getAccuracy(custom_test, predictions)
 
     # Plot the data
-    plt.plot(x, y)
-
-    # Show the plot
-    plt.show()
+    x=ks,y=accuracy
+    plt.plot(x, y),plt.legend(),plt.show()
 
 main()
